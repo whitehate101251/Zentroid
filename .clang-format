@@ -1,0 +1,227 @@
+---
+# Language: None, Cpp, Java, JavaScript, ObjC, Proto, TableGen, TextProto
+Language:        Cpp
+# Based on style
+BasedOnStyle:  WebKit
+# Offset of access specifiers (public, private, etc.)
+AccessModifierOffset: -4
+# Alignment after open bracket (open parenthesis, angle bracket, square bracket): Align, DontAlign, AlwaysBreak (always break after open bracket)
+AlignAfterOpenBracket: AlwaysBreak
+# When consecutive assignments, align all equal signs
+AlignConsecutiveAssignments: false
+# When consecutive declarations, align all declared variable names
+AlignConsecutiveDeclarations: false
+# Right-align escaped newlines (using backslash line continuation)
+AlignEscapedNewlines: Right
+# Horizontally align operands of binary and ternary expressions
+AlignOperands:   true
+# Align consecutive trailing comments
+AlignTrailingComments: true
+# Allow all parameters of a function declaration to be placed on the next line
+AllowAllParametersOfDeclarationOnNextLine: false
+# Allow short blocks on a single line
+AllowShortBlocksOnASingleLine: false
+# Allow short case labels on a single line
+AllowShortCaseLabelsOnASingleLine: false
+# Allow short functions on a single line: None, InlineOnly (defined in class), Empty (empty function), Inline (defined in class, empty function), All
+AllowShortFunctionsOnASingleLine: Empty
+# Allow short if statements on a single line
+AllowShortIfStatementsOnASingleLine: false
+# Allow short loops on a single line
+AllowShortLoopsOnASingleLine: false
+# Always break after definition return type (deprecated)
+AlwaysBreakAfterDefinitionReturnType: None
+# Always break after return type: None, All, TopLevel (top-level functions, not including class members),
+#   AllDefinitions (all definitions, not declarations), TopLevelDefinitions (all top-level function definitions)
+AlwaysBreakAfterReturnType: None
+# Always break before multi-line string literals
+AlwaysBreakBeforeMultilineStrings: false
+# Always break after template declarations
+AlwaysBreakTemplateDeclarations: true
+# false means function arguments are either all on the same line or each on its own line
+BinPackArguments: false
+# false means function parameters are either all on the same line or each on its own line
+BinPackParameters: false
+
+# Line break before braces: Attach (always attach braces to surrounding context), Linux (like Attach except for functions, namespaces, and classes),
+#   Mozilla (like Attach except for enums, functions, record definitions), Stroustrup (like Attach except for function definitions, catch, else),
+#   Allman (always break before braces), GNU (always break before braces and add extra indentation for control statement braces), WebKit (break before functions), Custom
+#   Note: statement blocks are also considered functions here
+BreakBeforeBraces: Custom
+# Brace wrapping rules, only effective when BreakBeforeBraces is set to Custom
+BraceWrapping:   
+  # After class definition
+  AfterClass: true
+  # After control statements
+  AfterControlStatement: false
+  # After enum definition
+  AfterEnum: true
+  # After function definition
+  AfterFunction: true
+  # After namespace definition
+  AfterNamespace: true
+  # After ObjC declaration
+  AfterObjCDeclaration: false
+  # After struct definition
+  AfterStruct: true
+  # After union definition
+  AfterUnion: true
+  # After extern block definition
+  AfterExternBlock: true
+  # Before catch
+  BeforeCatch: false
+  # Before else
+  BeforeElse: false
+  # Indent braces
+  IndentBraces: false
+
+# Line break before binary operators: None (break after operator), NonAssignment (break before non-assignment operators), All (break before all operators)
+BreakBeforeBinaryOperators: All
+
+# Break before comma in inheritance list
+BreakBeforeInheritanceComma: true
+# Inheritance list line breaking
+#BreakInheritanceList: BeforeColon
+# Break before ternary operator
+BreakBeforeTernaryOperators: true
+# Break before comma in constructor initializer list
+BreakConstructorInitializersBeforeComma: true
+# Break before constructor initializer list
+BreakConstructorInitializers: BeforeComma
+# Break after Java field annotations
+BreakAfterJavaFieldAnnotations: false
+
+BreakStringLiterals: true
+# Column limit per line, 0 means no limit
+ColumnLimit:     160
+# Regular expression describing comments with special meaning that should not be split into multiple lines or otherwise changed
+CommentPragmas:  '^ IWYU pragma:'
+# Compact namespaces
+CompactNamespaces: false
+# Constructor initializer list must be either all on one line or one per line
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+# Indentation width for constructor initializer list
+ConstructorInitializerIndentWidth: 4
+# Indentation width for continued lines
+ContinuationIndentWidth: 4
+# Remove spaces after '{' and before '}' in C++11 braced list initialization
+Cpp11BracedListStyle: false
+# Derive the most common pointer and reference alignment style
+DerivePointerAlignment: false
+# Disable formatting
+DisableFormat:   false
+# Automatically detect whether function calls and definitions are formatted as one parameter per line (Experimental)
+ExperimentalAutoDetectBinPacking: false
+# Fix namespace comments
+FixNamespaceComments: true
+# Macros that should be interpreted as foreach loops instead of function calls
+ForEachMacros:   
+  - foreach
+  - Q_FOREACH
+  - BOOST_FOREACH
+
+IncludeBlocks:   Preserve
+# Sort #include directives; those matching a regex have corresponding priority, unmatched ones default to INT_MAX (lower priority value means earlier order),
+#   negative priority can be used to ensure some #includes always appear at the top
+IncludeCategories: 
+  - Regex:           '^"(llvm|llvm-c|clang|clang-c)/'
+    Priority:        2
+  - Regex:           '^(<|"(gtest|gmock|isl|json)/)'
+    Priority:        3
+  - Regex:           'stdafx\.'  
+    Priority:        1
+  - Regex:           '.*'
+    Priority:        1
+
+IncludeIsMainRegex: '(Test)?$'
+# Indent case labels
+IndentCaseLabels: false
+
+IndentPPDirectives: None
+# Indentation width
+IndentWidth:     4
+# When return type is broken to a new line, indent the function declaration or definition name
+IndentWrappedFunctionNames: true
+
+JavaScriptQuotes: Leave
+
+JavaScriptWrapImports: true
+# Keep empty lines at the start of blocks
+KeepEmptyLinesAtTheStartOfBlocks: true
+# Regular expression for macros that start a block
+MacroBlockBegin: ''
+# Regular expression for macros that end a block
+MacroBlockEnd:   ''
+# Maximum number of consecutive empty lines to keep
+MaxEmptyLinesToKeep: 1
+
+# Namespace indentation: None, Inner (indent contents of nested namespaces), All
+NamespaceIndentation: All
+ObjCBinPackProtocolList: Auto
+# Indentation width when using ObjC blocks
+ObjCBlockIndentWidth: 4
+# Add a space after @property in ObjC
+ObjCSpaceAfterProperty: true
+# Add a space before protocol list in ObjC
+ObjCSpaceBeforeProtocolList: true
+
+PenaltyBreakAssignment: 2
+
+PenaltyBreakBeforeFirstCallParameter: 19
+# Penalty for introducing a line break inside a comment
+PenaltyBreakComment: 300
+# Penalty for first line break before <<
+PenaltyBreakFirstLessLess: 120
+# Penalty for introducing a line break inside a string literal
+PenaltyBreakString: 1000
+PenaltyBreakTemplateDeclaration: 10
+# Penalty for each character exceeding the column limit
+PenaltyExcessCharacter: 1000000
+# Penalty for putting function return type on its own line
+PenaltyReturnTypeOnItsOwnLine: 60
+# Pointer and reference alignment: Left, Right, Middle
+PointerAlignment: Right
+
+#RawStringFormats: 
+#  - Delimiter:       pb
+#    Language:        TextProto
+#    BasedOnStyle:    google
+# Allow reflowing comments
+ReflowComments:  false
+# Allow sorting #include directives
+SortIncludes:    true
+
+SortUsingDeclarations: true
+# Add space after C-style cast
+SpaceAfterCStyleCast: false
+# Add space after template keyword
+SpaceAfterTemplateKeyword: true
+# Add space before assignment operators
+SpaceBeforeAssignmentOperators: true
+# Add a space before opening parenthesis: Never, ControlStatements, Always
+SpaceBeforeCpp11BracedList: false
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
+SpaceBeforeParens: ControlStatements
+SpaceBeforeRangeBasedForLoopColon: true
+# Add space inside empty parentheses
+SpaceInEmptyParentheses: false
+# Number of spaces before trailing comments (only applies to //)
+SpacesBeforeTrailingComments: 1
+# Add space after '<' and before '>' in angle brackets
+SpacesInAngles:  false
+# Add spaces in container literals (ObjC and JavaScript arrays and dictionaries, etc.)
+SpacesInContainerLiterals: true
+# Add spaces inside parentheses of C-style casts
+SpacesInCStyleCastParentheses: false
+# Add spaces after '(' and before ')'
+SpacesInParentheses: false
+# Add spaces after '[' and before ']' (lambda expressions and unspecified size array declarations are not affected)
+SpacesInSquareBrackets: false
+# Standard: Cpp03, Cpp11, Auto
+Standard:        Cpp11
+# Tab width
+TabWidth:        4
+# Use tab characters: Never, ForIndentation, ForContinuationAndIndentation, Always
+UseTab:          Never
+...

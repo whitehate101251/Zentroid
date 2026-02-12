@@ -1,0 +1,3 @@
+[submodule "Zentroid/ZentroidCore"]
+	path = Zentroid/ZentroidCore
+	url = https://github.com/barry-ran/QtScrcpyCore.git

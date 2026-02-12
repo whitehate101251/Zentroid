@@ -1,0 +1,183 @@
+{
+    "keyMapNodes": [
+        {
+            "centerPos": {
+                "x": 0.194792,
+                "y": 0.716484
+            },
+            "comment": "Steering Wheel",
+            "downKey": "Key_S",
+            "downOffset": 0.15,
+            "leftKey": "Key_A",
+            "leftOffset": 0.15,
+            "rightKey": "Key_D",
+            "rightOffset": 0.15,
+            "type": "KMT_STEER_WHEEL",
+            "upKey": "Key_W",
+            "upOffset": 0.15
+        },
+        {
+            "comment": "Activate item under crosshair",
+            "key": "LeftButton",
+            "pos": {
+                "x": 0.51875,
+                "y": 0.49670300000000006
+            },
+            "switchMap": false,
+            "type": "KMT_CLICK"
+        },
+        {
+            "comment": "Activate first special skill",
+            "key": "Key_E",
+            "pos": {
+                "x": 0.909375,
+                "y": 0.542857
+            },
+            "switchMap": false,
+            "type": "KMT_CLICK"
+        },
+        {
+            "comment": "Activate Chat",
+            "key": "Key_C",
+            "pos": {
+                "x": 0.905208,
+                "y": 0.254945
+            },
+            "switchMap": false,
+            "type": "KMT_CLICK"
+        },
+        {
+            "comment": "Chat option 1",
+            "key": "Key_1",
+            "pos": {
+                "x": 0.875,
+                "y": 0.523077
+            },
+            "switchMap": false,
+            "type": "KMT_CLICK"
+        },
+        {
+            "comment": "Chat option 2",
+            "key": "Key_2",
+            "pos": {
+                "x": 0.875,
+                "y": 0.606593
+            },
+            "switchMap": false,
+            "type": "KMT_CLICK"
+        },
+        {
+            "comment": "Chat option 3",
+            "key": "Key_3",
+            "pos": {
+                "x": 0.875,
+                "y": 0.685714
+            },
+            "switchMap": false,
+            "type": "KMT_CLICK"
+        },
+        {
+            "comment": "Chat option 4",
+            "key": "Key_4",
+            "pos": {
+                "x": 0.875,
+                "y": 0.756044
+            },
+            "switchMap": false,
+            "type": "KMT_CLICK"
+        },
+        {
+            "comment": "Chat option 5",
+            "key": "Key_5",
+            "pos": {
+                "x": 0.875,
+                "y": 0.832967
+            },
+            "switchMap": false,
+            "type": "KMT_CLICK"
+        },
+        {
+            "comment": "Chat option 6",
+            "key": "Key_6",
+            "pos": {
+                "x": 0.875,
+                "y": 0.911273
+            },
+            "switchMap": false,
+            "type": "KMT_CLICK"
+        },
+        {
+            "key": "Key_J",
+            "pos": {
+                "x": 0.2104434742647059,
+                "y": 0.371534872694317
+            },
+            "switchMap": false,
+            "type": "KMT_CLICK"
+        },
+        {
+            "key": "Key_G",
+            "pos": {
+                "x": 0.13413181678921574,
+                "y": 0.34570347632139453
+            },
+            "switchMap": false,
+            "type": "KMT_CLICK"
+        },
+        {
+            "key": "Key_L",
+            "pos": {
+                "x": 0.6916891163793103,
+                "y": 0.5372152673192772
+            },
+            "switchMap": false,
+            "type": "KMT_CLICK"
+        },
+        {
+            "key": "Key_BracketRight",
+            "pos": {
+                "x": 0.5676050646551725,
+                "y": 0.3039050734186747
+            },
+            "switchMap": false,
+            "type": "KMT_CLICK"
+        },
+        {
+            "key": "Key_Right",
+            "pos": {
+                "x": 0.7530466715494791,
+                "y": 0.28958722014925375
+            },
+            "switchMap": false,
+            "type": "KMT_CLICK"
+        },
+        {
+            "key": "Key_Backslash",
+            "pos": {
+                "x": 0.671234130859375,
+                "y": 0.3903451492537313
+            },
+            "switchMap": false,
+            "type": "KMT_CLICK"
+        },
+        {
+            "key": "Key_P",
+            "pos": {
+                "x": 0.7944285074869791,
+                "y": 0.9464902052238806
+            },
+            "switchMap": false,
+            "type": "KMT_CLICK"
+        }
+    ],
+    "mouseMoveMap": {
+        "speedRatioX": 3.25,
+        "speedRatioY": 1.25,
+        "startPos": {
+            "x": 0.5,
+            "y": 0.5
+        }
+    },
+    "suspendKey": "Key_X",
+    "switchKey": "Ctrl+Key_Backslash"
+}

@@ -1,0 +1,45 @@
+{
+    "keyMapNodes": [
+        {
+            "comment": "Test multi-point click",
+            "key": "Key_Space",
+            "pos": {
+                "x": 0.5,
+                "y": 0.5
+            },
+            "type": "KMT_CLICK_MULTI"
+        },
+        {
+            "comment": "Test drag",
+            "endPos": {
+                "x": 0.5,
+                "y": 0.3
+            },
+            "key": "Key_Up",
+            "startPos": {
+                "x": 0.5,
+                "y": 0.7
+            },
+            "type": "KMT_DRAG"
+        },
+        {
+            "key": "Key_L",
+            "pos": {
+                "x": 0.6364466349283854,
+                "y": 0.5009314456035767
+            },
+            "switchMap": false,
+            "type": "KMT_CLICK"
+        },
+        {
+            "key": "Key_J",
+            "pos": {
+                "x": 0.2938093596813725,
+                "y": 0.5092286220043573
+            },
+            "type": "KMT_CLICK_TWICE"
+        }
+    ],
+    "suspendKey": "Key_X",
+    "switchKey": "Ctrl+Key_Backslash"
+}
