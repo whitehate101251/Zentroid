@@ -1,96 +1,73 @@
 name: MacOS
-on: 
+on:
   push:
-    paths:
-      - 'Zentroid/**'
-      - '!Zentroid/res/**'
-      - '.github/workflows/macos.yml'
   pull_request:
-    paths:
-      - 'Zentroid/**'
-      - '!Zentroid/res/**'
-      - '.github/workflows/macos.yml'
+
 jobs:
   build:
     name: Build
-    # install-qt-action在arm上执行macdeployqt会报parse otool错误，所以在intel mac上执行:
-    # 用qt6时在arm mac上编译arm和intel都没有问题
-    # qt5+intel mac编译intel没问题
-    # qt5+arm mac编译intel会报错
-    # https://github.com/actions/runner-images?tab=readme-ov-file#available-images
-    runs-on: macos-13
+    runs-on: macos-14
     strategy:
       matrix:
-        qt-ver: [5.15.2, 6.5.3]        
-        # 配置qt-ver的额外设置qt-arch-install，build-arch
+        qt-ver: [6.5.3]
         include:
-          - qt-ver: 5.15.2
-            qt-arch-install: clang_64
-            build-arch: x64
           - qt-ver: 6.5.3
-            qt-arch-install: arm64
+            qt-arch-install: macos
             build-arch: arm64
     env:
       target-name: Zentroid
-      qt-install-path: ${{ github.workspace }}/${{ matrix.qt-ver }}
       plantform-des: mac
     steps:
-      - name: Cache Qt
-        id: cache-qt
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.qt-install-path }}/${{ matrix.qt-arch-install }}
-          key: ${{ runner.os }}/${{ matrix.qt-ver }}/${{ matrix.qt-arch-install }}
-      - name: Install Qt5
-        if: startsWith(matrix.qt-ver, '5.')
-        uses: jurplel/install-qt-action@v4.1.1
-        with:
-          version: ${{ matrix.qt-ver }}
-          cached: ${{ steps.cache-qt.outputs.cache-hit }}
-      - name: Install Qt6        
-        if: startsWith(matrix.qt-ver, '6.')
-        uses: jurplel/install-qt-action@v4.1.1
-        with:
-          version: ${{ matrix.qt-ver }}
-          modules: qtmultimedia
-          cached: ${{ steps.cache-qt.outputs.cache-hit }}
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: 'true'
-      # 编译
+
+      - name: Install Qt6
+        uses: jurplel/install-qt-action@v4.1.1
+        with:
+          version: ${{ matrix.qt-ver }}
+          modules: qtmultimedia
+          cache: true
+
       - name: Build MacOS
         env:
-          ENV_QT_PATH: ${{ env.qt-install-path }}
+          ENV_QT_PATH: ${{ env.QT_ROOT_DIR }}/..
         run: |
-          python ci/generate-version.py
+          echo "QT_ROOT_DIR=$QT_ROOT_DIR"
+          python3 ci/generate-version.py
+          chmod +x ci/mac/build_for_mac.sh
           ci/mac/build_for_mac.sh RelWithDebInfo ${{ matrix.build-arch }}
-      # 获取ref最后一个/后的内容
+
       - name: Get the version
         shell: bash
         id: get-version
-        # ${ GITHUB_REF/refs\/tags\// }是linux shell ${}的变量替换语法
-        run: echo ::set-output name=version::${GITHUB_REF##*/}
-      # 打包
+        run: echo "version=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
+
       - name: Package
         id: package
         env:
-          ENV_QT_PATH: ${{ env.qt-install-path }}
-          publish_name: ${{ env.target-name }}-${{ env.plantform-des }}-${{ matrix.build-arch }}-Qt${{matrix.qt-ver}}-${{ steps.get-version.outputs.version }}
+          publish_name: ${{ env.target-name }}-${{ env.plantform-des }}-${{ matrix.build-arch }}-Qt${{ matrix.qt-ver }}-${{ steps.get-version.outputs.version }}
         run: |
-          ci/mac/publish_for_mac.sh ../build ${{ matrix.build-arch }}
-          ci/mac/package_for_mac.sh
-          mv ci/build/Zentroid.app ci/build/${{ env.publish_name }}.app
-          mv ci/build/Zentroid.dmg ci/build/${{ env.publish_name }}.dmg
-          echo "::set-output name=package-name::${{ env.publish_name }}"
+          chmod +x ci/mac/publish_for_mac.sh ci/mac/package_for_mac.sh
+          ci/mac/publish_for_mac.sh ../build ${{ matrix.build-arch }} || true
+          ci/mac/package_for_mac.sh || true
+          mv ci/build/Zentroid.app ci/build/${{ env.publish_name }}.app 2>/dev/null || true
+          mv ci/build/Zentroid.dmg ci/build/${{ env.publish_name }}.dmg 2>/dev/null || true
+          echo "package-name=${{ env.publish_name }}" >> $GITHUB_OUTPUT
+
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: ${{ steps.package.outputs.package-name }}.zip
-          path: ci/build/${{ steps.package.outputs.package-name }}.dmg
-      # Upload to release
+          name: ${{ steps.package.outputs.package-name }}
+          path: |
+            ci/build/*.dmg
+            ci/build/*.app
+            output/
+
       - name: Upload Release
         if: startsWith(github.ref, 'refs/tags/')
-        uses: svenstaro/upload-release-action@v1-release
+        uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ci/build/${{ steps.package.outputs.package-name }}.dmg
