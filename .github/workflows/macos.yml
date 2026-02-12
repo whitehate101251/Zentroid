@@ -54,11 +54,10 @@ jobs:
           version: ${{ matrix.qt-ver }}
           modules: qtmultimedia
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: 'true'
-          ssh-key: ${{ secrets.BOT_SSH_KEY }}
       # 编译
       - name: Build MacOS
         env:
