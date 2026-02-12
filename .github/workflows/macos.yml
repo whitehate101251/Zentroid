@@ -7,12 +7,6 @@ jobs:
   build:
     name: Build
     runs-on: macos-14
-    strategy:
-      matrix:
-        qt-ver: [6.5.3]
-        include:
-          - qt-ver: 6.5.3
-            build-arch: arm64
     env:
       target-name: Zentroid
       plantform-des: mac
@@ -24,7 +18,7 @@ jobs:
       - name: Install Qt6
         uses: jurplel/install-qt-action@v4.1.1
         with:
-          version: ${{ matrix.qt-ver }}
+          version: 6.5.3
           modules: qtmultimedia
           cache: true
 
@@ -35,7 +29,7 @@ jobs:
         run: |
           rm -rf build
           mkdir build && cd build
-          cmake -DCMAKE_PREFIX_PATH="$QT_ROOT_DIR/lib/cmake/Qt6" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_OSX_ARCHITECTURES=arm64 ..
+          cmake -DCMAKE_PREFIX_PATH="$QT_ROOT_DIR" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_OSX_ARCHITECTURES=arm64 ..
 
       - name: CMake Build
         run: |
@@ -48,18 +42,14 @@ jobs:
         run: echo "version=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
 
       - name: Package
-        id: package
         run: |
-          publish_name="${{ env.target-name }}-${{ env.plantform-des }}-${{ matrix.build-arch }}-Qt${{ matrix.qt-ver }}-${{ steps.get-version.outputs.version }}"
-          echo "package-name=${publish_name}" >> $GITHUB_OUTPUT
           mkdir -p publish
-          # Find and copy the .app bundle
           find output -name "*.app" -exec cp -R {} publish/ \; 2>/dev/null || true
-          ls -la publish/ || true
+          cp -r output/* publish/ 2>/dev/null || true
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.target-name }}-${{ env.plantform-des }}-${{ matrix.build-arch }}
+          name: ${{ env.target-name }}-mac-arm64
           path: |
             publish/
             output/

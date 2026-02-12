@@ -7,14 +7,6 @@ jobs:
   build:
     name: Build
     runs-on: windows-latest
-    strategy:
-      matrix:
-        qt-ver: [5.15.2]
-        qt-arch: [win64_msvc2019_64]
-        include:
-          - qt-arch: win64_msvc2019_64
-            msvc-arch: x64
-            qt-arch-install: msvc2019_64
     env:
       target-name: Zentroid
       plantform-des: win
@@ -23,18 +15,19 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install Qt
+      - name: Install Qt6
         uses: jurplel/install-qt-action@v4.1.1
         with:
-          version: ${{ matrix.qt-ver }}
+          version: 6.5.3
           target: desktop
-          arch: ${{ matrix.qt-arch }}
+          arch: win64_msvc2019_64
+          modules: qtmultimedia
           cache: true
 
       - name: Setup MSVC
         uses: ilammy/msvc-dev-cmd@v1
         with:
-          arch: ${{ matrix.msvc-arch }}
+          arch: x64
 
       - name: Generate Version
         shell: bash
@@ -46,7 +39,7 @@ jobs:
           if exist build rmdir /s /q build
           mkdir build
           cd build
-          cmake -DCMAKE_PREFIX_PATH="%QT_ROOT_DIR%/lib/cmake/Qt5" -DCMAKE_BUILD_TYPE=RelWithDebInfo -G "Visual Studio 17 2022" -A x64 ..
+          cmake -DCMAKE_PREFIX_PATH="%QT_ROOT_DIR%" -DCMAKE_BUILD_TYPE=RelWithDebInfo -G "Visual Studio 17 2022" -A x64 ..
 
       - name: CMake Build
         shell: cmd
@@ -62,30 +55,29 @@ jobs:
       - name: Package
         shell: cmd
         run: |
-          set publish_dir=publish\${{ env.target-name }}-${{ env.plantform-des }}-${{ matrix.msvc-arch }}
+          set publish_dir=publish\%target-name%-win-x64
           if exist %publish_dir% rmdir /s /q %publish_dir%
           mkdir %publish_dir%
           xcopy output\x64\RelWithDebInfo\* %publish_dir%\ /E /Y
-          %QT_ROOT_DIR%\bin\windeployqt.exe %publish_dir%\Zentroid.exe
+          "%QT_ROOT_DIR%\bin\windeployqt.exe" %publish_dir%\Zentroid.exe
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.target-name }}-${{ env.plantform-des }}-${{ matrix.msvc-arch }}
-          path: publish/${{ env.target-name }}-${{ env.plantform-des }}-${{ matrix.msvc-arch }}/
+          name: ${{ env.target-name }}-win-x64
+          path: publish/${{ env.target-name }}-win-x64/
 
-      - name: Create Zip and Upload Release
+      - name: Upload Release
         if: startsWith(github.ref, 'refs/tags/')
         shell: pwsh
         run: |
-          $name = "${{ env.target-name }}-${{ env.plantform-des }}-${{ matrix.msvc-arch }}-${{ steps.get-version.outputs.version }}"
-          Compress-Archive -Path "publish\${{ env.target-name }}-${{ env.plantform-des }}-${{ matrix.msvc-arch }}" -DestinationPath "publish\${name}.zip"
+          Compress-Archive -Path "publish\${{ env.target-name }}-win-x64" -DestinationPath "publish\${{ env.target-name }}-win-x64-${{ steps.get-version.outputs.version }}.zip"
 
-      - name: Upload Release
+      - name: Upload Release Asset
         if: startsWith(github.ref, 'refs/tags/')
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: publish/${{ env.target-name }}-${{ env.plantform-des }}-${{ matrix.msvc-arch }}-${{ steps.get-version.outputs.version }}.zip
-          asset_name: ${{ env.target-name }}-${{ env.plantform-des }}-${{ matrix.msvc-arch }}-${{ steps.get-version.outputs.version }}.zip
+          file: publish/${{ env.target-name }}-win-x64-${{ steps.get-version.outputs.version }}.zip
+          asset_name: ${{ env.target-name }}-win-x64-${{ steps.get-version.outputs.version }}.zip
           tag: ${{ github.ref }}
           overwrite: true

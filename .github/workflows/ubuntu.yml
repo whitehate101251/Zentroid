@@ -7,10 +7,6 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        qt-ver: [5.15.2]
-        gcc-arch: [x64]
     env:
       target-name: Zentroid
       plantform-des: ubuntu
@@ -28,7 +24,6 @@ jobs:
             cmake \
             libglew-dev \
             libglfw3-dev \
-            imagemagick \
             wget \
             patchelf \
             zip \
@@ -42,7 +37,6 @@ jobs:
             libxrender-dev \
             libxext-dev \
             python3 \
-            python3-pip \
             libfuse2 \
             libasound2-dev \
             libgl1-mesa-dev \
@@ -51,12 +45,15 @@ jobs:
             libxi-dev \
             libxinerama-dev \
             libxcursor-dev \
-            zlib1g-dev
+            zlib1g-dev \
+            libpulse-dev \
+            libxkbfile-dev
 
-      - name: Install Qt
+      - name: Install Qt6
         uses: jurplel/install-qt-action@v4.1.1
         with:
-          version: ${{ matrix.qt-ver }}
+          version: 6.5.3
+          modules: qtmultimedia
           cache: true
 
       - name: Generate Version
@@ -66,7 +63,7 @@ jobs:
         run: |
           rm -rf build
           mkdir build && cd build
-          cmake -DCMAKE_PREFIX_PATH="$QT_ROOT_DIR/lib/cmake/Qt5" -DCMAKE_BUILD_TYPE=Release ..
+          cmake -DCMAKE_PREFIX_PATH="$QT_ROOT_DIR" -DCMAKE_BUILD_TYPE=Release ..
 
       - name: CMake Build
         run: |
@@ -83,11 +80,10 @@ jobs:
           mkdir -p publish/${{ env.target-name }}-linux-x64
           cp -r output/x64/Release/* publish/${{ env.target-name }}-linux-x64/ 2>/dev/null || \
           cp -r output/* publish/${{ env.target-name }}-linux-x64/ 2>/dev/null || true
-          ls -la publish/${{ env.target-name }}-linux-x64/ || true
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.target-name }}-${{ env.plantform-des }}-${{ matrix.gcc-arch }}
+          name: ${{ env.target-name }}-linux-x64
           path: |
             publish/
             output/
