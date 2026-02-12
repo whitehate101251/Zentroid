@@ -12,7 +12,6 @@ jobs:
         qt-ver: [6.5.3]
         include:
           - qt-ver: 6.5.3
-            qt-arch-install: macos
             build-arch: arm64
     env:
       target-name: Zentroid
@@ -30,12 +29,21 @@ jobs:
           modules: qtmultimedia
           cache: true
 
-      - name: Build MacOS
-        env:
-          ENV_QT_PATH: ${{ env.QT_ROOT_DIR }}/..
+      - name: Detect Qt Path
         run: |
           echo "QT_ROOT_DIR=$QT_ROOT_DIR"
-          python3 ci/generate-version.py
+          ENV_QT_PATH=$(dirname "$QT_ROOT_DIR")
+          echo "ENV_QT_PATH=$ENV_QT_PATH" >> $GITHUB_ENV
+          echo "Detected ENV_QT_PATH=$ENV_QT_PATH"
+          ls -la "$ENV_QT_PATH" || true
+          ls -la "$QT_ROOT_DIR" || true
+
+      - name: Generate Version
+        run: python3 ci/generate-version.py
+
+      - name: Build MacOS
+        run: |
+          echo "ENV_QT_PATH=$ENV_QT_PATH"
           chmod +x ci/mac/build_for_mac.sh
           ci/mac/build_for_mac.sh RelWithDebInfo ${{ matrix.build-arch }}
 
@@ -46,23 +54,20 @@ jobs:
 
       - name: Package
         id: package
-        env:
-          publish_name: ${{ env.target-name }}-${{ env.plantform-des }}-${{ matrix.build-arch }}-Qt${{ matrix.qt-ver }}-${{ steps.get-version.outputs.version }}
         run: |
-          chmod +x ci/mac/publish_for_mac.sh ci/mac/package_for_mac.sh
+          publish_name="${{ env.target-name }}-${{ env.plantform-des }}-${{ matrix.build-arch }}-Qt${{ matrix.qt-ver }}-${{ steps.get-version.outputs.version }}"
+          chmod +x ci/mac/publish_for_mac.sh ci/mac/package_for_mac.sh || true
           ci/mac/publish_for_mac.sh ../build ${{ matrix.build-arch }} || true
           ci/mac/package_for_mac.sh || true
-          mv ci/build/Zentroid.app ci/build/${{ env.publish_name }}.app 2>/dev/null || true
-          mv ci/build/Zentroid.dmg ci/build/${{ env.publish_name }}.dmg 2>/dev/null || true
-          echo "package-name=${{ env.publish_name }}" >> $GITHUB_OUTPUT
+          mv ci/build/Zentroid.app ci/build/${publish_name}.app 2>/dev/null || true
+          mv ci/build/Zentroid.dmg ci/build/${publish_name}.dmg 2>/dev/null || true
+          echo "package-name=${publish_name}" >> $GITHUB_OUTPUT
 
       - uses: actions/upload-artifact@v4
-        if: always()
         with:
-          name: ${{ steps.package.outputs.package-name }}
+          name: ${{ env.target-name }}-${{ env.plantform-des }}-${{ matrix.build-arch }}
           path: |
-            ci/build/*.dmg
-            ci/build/*.app
+            ci/build/
             output/
 
       - name: Upload Release

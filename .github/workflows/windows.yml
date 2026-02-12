@@ -10,18 +10,13 @@ jobs:
     strategy:
       matrix:
         qt-ver: [5.15.2]
-        qt-arch: [win64_msvc2019_64, win32_msvc2019]
+        qt-arch: [win64_msvc2019_64]
         include:
           - qt-arch: win64_msvc2019_64
             msvc-arch: x64
             qt-arch-install: msvc2019_64
-          - qt-arch: win32_msvc2019
-            msvc-arch: x86
-            qt-arch-install: msvc2019
     env:
       target-name: Zentroid
-      vcvarsall-path: 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat'
-      vcinstall-path: 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC'
       plantform-des: win
     steps:
       - uses: actions/checkout@v4
@@ -35,16 +30,29 @@ jobs:
           version: ${{ matrix.qt-ver }}
           target: desktop
           arch: ${{ matrix.qt-arch }}
-          dir: ${{ github.workspace }}
           cache: true
+
+      - name: Detect Qt Path
+        shell: bash
+        run: |
+          echo "QT_ROOT_DIR=$QT_ROOT_DIR"
+          echo "Qt5_DIR=$Qt5_DIR"
+          # ENV_QT_PATH should be the parent of the arch folder
+          # QT_ROOT_DIR points to e.g. /d/a/Zentroid/Qt/5.15.2/msvc2019_64
+          ENV_QT_PATH=$(dirname "$QT_ROOT_DIR")
+          echo "ENV_QT_PATH=$ENV_QT_PATH" >> $GITHUB_ENV
+          echo "Detected ENV_QT_PATH=$ENV_QT_PATH"
+          echo "Contents of ENV_QT_PATH:"
+          ls -la "$ENV_QT_PATH" || true
+
+      - name: Generate Version
+        shell: bash
+        run: python ci/generate-version.py
 
       - name: Build MSVC
         shell: cmd
-        env:
-          ENV_VCVARSALL: ${{ env.vcvarsall-path }}
-          ENV_QT_PATH: ${{ github.workspace }}/Qt/${{ matrix.qt-ver }}
         run: |
-          call python ci\generate-version.py
+          echo ENV_QT_PATH is: %ENV_QT_PATH%
           call "ci\win\build_for_win.bat" RelWithDebInfo ${{ matrix.msvc-arch }}
 
       - name: Get the version
@@ -53,28 +61,37 @@ jobs:
         run: echo "version=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
 
       - name: Package
+        shell: cmd
         id: package
         env:
-          ENV_VCVARSALL: ${{ env.vcvarsall-path }}
-          ENV_VCINSTALL: ${{ env.vcinstall-path }}
-          ENV_QT_PATH: ${{ github.workspace }}/Qt/${{ matrix.qt-ver }}
-          publish_name: ${{ env.target-name }}-${{ env.plantform-des }}-${{ matrix.msvc-arch }}-${{ steps.get-version.outputs.version }}
+          ENV_VCVARSALL: 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat'
+          ENV_VCINSTALL: 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC'
         run: |
-          cmd.exe /c ci\win\publish_for_win.bat ${{ matrix.msvc-arch }} ..\build\${{ env.publish_name }}
-          Compress-Archive -Path ci\build\${{ env.publish_name }} ci\build\${{ env.publish_name }}.zip
-          echo "package-name=${{ env.publish_name }}" >> $env:GITHUB_OUTPUT
+          call "ci\win\publish_for_win.bat" ${{ matrix.msvc-arch }} ..\build\${{ env.target-name }}-${{ env.plantform-des }}-${{ matrix.msvc-arch }}
+
+      - name: Create Zip
+        shell: pwsh
+        run: |
+          $publishName = "${{ env.target-name }}-${{ env.plantform-des }}-${{ matrix.msvc-arch }}-${{ steps.get-version.outputs.version }}"
+          if (Test-Path "ci\build\${{ env.target-name }}-${{ env.plantform-des }}-${{ matrix.msvc-arch }}") {
+            Compress-Archive -Path "ci\build\${{ env.target-name }}-${{ env.plantform-des }}-${{ matrix.msvc-arch }}" -DestinationPath "ci\build\${publishName}.zip"
+          }
+          echo "package-name=${publishName}" >> $env:GITHUB_OUTPUT
+        id: zip
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.package.outputs.package-name }}.zip
-          path: ci\build\${{ steps.package.outputs.package-name }}
+          name: ${{ env.target-name }}-${{ env.plantform-des }}-${{ matrix.msvc-arch }}
+          path: |
+            ci/build/${{ env.target-name }}-${{ env.plantform-des }}-${{ matrix.msvc-arch }}/
+            output/
 
       - name: Upload Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ci\build\${{ steps.package.outputs.package-name }}.zip
-          asset_name: ${{ steps.package.outputs.package-name }}.zip
+          file: ci/build/${{ steps.zip.outputs.package-name }}.zip
+          asset_name: ${{ steps.zip.outputs.package-name }}.zip
           tag: ${{ github.ref }}
           overwrite: true

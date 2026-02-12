@@ -55,14 +55,23 @@ jobs:
         with:
           version: ${{ matrix.qt-ver }}
           cache: true
-          dir: ${{ github.workspace }}
+
+      - name: Detect Qt Path
+        run: |
+          echo "QT_ROOT_DIR=$QT_ROOT_DIR"
+          echo "Qt5_DIR=$Qt5_DIR"
+          ENV_QT_PATH=$(dirname "$QT_ROOT_DIR")
+          echo "ENV_QT_PATH=$ENV_QT_PATH" >> $GITHUB_ENV
+          echo "Detected ENV_QT_PATH=$ENV_QT_PATH"
+          ls -la "$ENV_QT_PATH" || true
+
+      - name: Generate Version
+        run: python3 ci/generate-version.py
 
       - name: Build Release
         shell: bash
-        env:
-          ENV_QT_PATH: ${{ github.workspace }}/Qt/${{ matrix.qt-ver }}
         run: |
-          python3 ci/generate-version.py
+          echo "ENV_QT_PATH=$ENV_QT_PATH"
           chmod +x ci/linux/build_for_linux.sh
           ci/linux/build_for_linux.sh "Release"
 
@@ -74,7 +83,6 @@ jobs:
       - name: Package AppImage
         shell: bash
         env:
-          ENV_QT_PATH: ${{ github.workspace }}/Qt/${{ matrix.qt-ver }}
           APPIMAGE_EXTRACT_AND_RUN: 1
         run: |
           chmod +x ci/linux/package_appimage.sh
@@ -83,8 +91,10 @@ jobs:
       - name: Upload AppImage Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.target-name }}-${{ env.plantform-des }}-${{ matrix.gcc-arch }}-${{ steps.get-version.outputs.version }}-AppImage
-          path: output/appimage/*.AppImage
+          name: ${{ env.target-name }}-${{ env.plantform-des }}-${{ matrix.gcc-arch }}
+          path: |
+            output/appimage/*.AppImage
+            output/
           if-no-files-found: warn
 
       - name: Upload to Releases
@@ -93,7 +103,6 @@ jobs:
         with:
           file: output/appimage/*.AppImage
           file_glob: true
-          asset_name: ${{ env.target-name }}-${{ env.plantform-des }}-${{ matrix.gcc-arch }}-${{ steps.get-version.outputs.version }}.AppImage
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref }}
           overwrite: true
