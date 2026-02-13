@@ -1,6 +1,7 @@
 # Zentroid
 
-> **Zentroid — Reimagining Android screen control — inspired by QtScrcpy**
+> **Zentroid — Reimagining Android screen control — inspired by QtScrcpy and Scrcpy**
+
 
 ![license](https://img.shields.io/badge/license-Apache2.0-blue.svg)
 
@@ -167,8 +168,19 @@ A transparent overlay that renders keymap nodes directly on top of the live vide
 
 - Android API ≥ 21 (Android 5.0)
 - [ADB debugging](https://developer.android.com/studio/command-line/adb.html#Enabling) enabled on your device
-
+- 
 ---
+
+## 📦 Downloads
+
+Prebuilt binaries are published on the GitHub Releases page.
+
+- **Linux (AppImage)** — download the latest `Zentroid-x86_64.AppImage` from the [Releases](https://github.com/whitehate101251/Zentroid/releases/latest) page, then:
+   ```bash
+   chmod +x Zentroid-x86_64.AppImage
+   ./Zentroid-x86_64.AppImage
+   ```
+- **Windows / macOS** — builds will be provided as installers/archives in future releases. Until then, you can build from source using the platform-specific instructions below.
 
 ## � How to Use
 
@@ -379,3 +391,11 @@ See [LICENSE](LICENSE) for the full license text.
 ## 👤 Author
 
 **Shreyansh Chauhan** — [github.com/whitehate101251](https://github.com/whitehate101251)
+
+---
+
+### Special Thanks
+
+Special shout-out to [**Rankun (barry-ran)**](https://github.com/barry-ran), original creator of [**QtScrcpy**](https://github.com/barry-ran/QtScrcpy), whose work inspired this project and made Zentroid possible.
+
+---
