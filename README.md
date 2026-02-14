@@ -241,7 +241,7 @@ Prebuilt binaries are published on the GitHub Releases page.
    cd output\x64\Release
    Zentroid.exe
    ```
-   Or simply double-click `Zentroid.exe` in File Explorer.
+   Or **simply double-click `Zentroid.exe` in File Explorer.**
 
 4. **Connect your device:**
    - **USB:** Plug in your phone with USB debugging enabled
